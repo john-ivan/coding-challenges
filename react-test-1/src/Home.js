@@ -189,7 +189,7 @@ class App extends Component {
     this.setState({ searchTerm: event.target.value });
   }
 
-// RENDER ---------------------------
+// RENDER ---------------------------------------------------------------------
 
   render() {
     console.log(this.state);

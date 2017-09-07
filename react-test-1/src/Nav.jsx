@@ -14,6 +14,4 @@ function Nav({ prev, next }) {
   );
 }
 
-// add react props validation
-
 export default Nav;

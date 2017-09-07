@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 import Card from './Card';
 
 const SortableItem = SortableElement(({ id, name, image, birth_year, homeworld }) => {
-return (
-  <div>
-    <Card
-      id={id}
-      name={name}
-      image={image}
-      birth_year={birth_year}
-      homeworld={homeworld}
+  return (
+    <div>
+      <Card
+        id={id}
+        name={name}
+        image={image}
+        birth_year={birth_year}
+        homeworld={homeworld}
   // modifyFavoritesAPI={this.modifyFavoritesAPI}
   // fetchPerson={this.fetchPerson}
-  />
-  </div>
-)
+      />
+    </div>
+  );
 });
 
 const SortableList = SortableContainer(({ PeopleFavorites }) => {
@@ -43,11 +43,18 @@ class PeopleFavorites extends Component {
       PeopleFavorites: null,
     }
     this.fetchFaveCards = this.fetchFaveCards.bind(this);
+    this.onSortEnd = this.onSortEnd.bind(this);
   }
 
-componentDidMount() {
-  this.fetchFaveCards();
-}
+  componentDidMount() {
+    this.fetchFaveCards();
+  }
+
+  onSortEnd ({ oldIndex, newIndex }) {
+    this.setState({
+      PeopleFavorites: arrayMove(this.state.PeopleFavorites, oldIndex, newIndex),
+    });
+  }
 
   fetchFaveCards() {
     fetch('http://localhost:3008/peoplefavorites')
@@ -58,14 +65,15 @@ componentDidMount() {
   }
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
     const { PeopleFavorites } = this.state;
-    // const styles = {
-    // };
     return (
       <div>
         { PeopleFavorites ?
-          <SortableList PeopleFavorites={PeopleFavorites} /> : null }
+          <SortableList
+            onSortEnd={this.onSortEnd}
+            PeopleFavorites={PeopleFavorites}
+          /> : null }
       </div>
     );
   }
