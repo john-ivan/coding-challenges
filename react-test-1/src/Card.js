@@ -52,8 +52,8 @@ class Card extends Component {
   }
 
   favorite() {
-    const { modifyFavoritesAPI, id } = this.props;
-    modifyFavoritesAPI(id);
+    const { modifyFavoritesAPI, id, name, image, birth_year, homeworld } = this.props;
+    modifyFavoritesAPI(id, name, image, birth_year, homeworld);
   }
 
 // RENDER -------------------------------------------------------------
