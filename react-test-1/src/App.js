@@ -187,7 +187,7 @@ class App extends Component {
 // RENDER ---------------------------
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
     const { favorites, favoritesCount, people, planets, searchTerm } = this.state;
 
     return (
