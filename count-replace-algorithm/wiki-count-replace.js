@@ -32,15 +32,27 @@ const fetchTop100 = new Promise((resolve) => {
   });
 });
 
+// function to select only text nodes by using a treewalker
+function textNodesUnder(el) {
+  let n;
+  const a = [];
+  const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+  while (n = walk.nextNode()) a.push(n);
+  return a;
+}
+
 function countReplaceTop25() {
-  // create store for counters
+  // create store to keep track of word instances
   const store = {};
-  const body = document.body;
+  const pageContent = document.getElementById('content');
   // select body inner text
-  const textContent = body.innerText;
+  const textContent = pageContent.textContent;
 
   // filter out non a-z characters, change to lower case, and split into an array
-  const bodyContent = textContent.replace(/[^a-zA-Z ]/g, '').toLowerCase().split(' ');
+  const bodyContent = textContent
+    .replace(/[^a-zA-Z ]/g, '')
+    .toLowerCase()
+    .split(' ');
 
   // loop through body content
   for (let i = 0; i < bodyContent.length; i += 1) {
@@ -58,17 +70,25 @@ function countReplaceTop25() {
     }
   }
   // order stored value by occurence
-  const ordered = Object.values(store).sort((a, b) => a.count - b.count);
-  // slice of largest elements
-  const top25 = ordered.slice((ordered.length - 25), (ordered.length));
+  const ordered = Object.values(store).sort((a, b) => b.count - a.count);
+  // slice off largest elements
+  const top25 = ordered.slice(0, 25);
+
+  // call textNodesUnder on content div to generate an array of only text nodes
+  const textNodes = textNodesUnder(document.getElementById('content'));
 
   // loop through array of top 25 words
-  for (let i = top25.length - 1; i >= 0; i -= 1) {
-    // use regex to replace words with their counts
+  for (let i = 0; i < top25.length; i += 1) {
+    // create a new regex object to target each word
     const regex = new RegExp(`\\b${top25[i].word}\\b`, 'ig');
-    body.innerHTML = body.innerHTML.replace(regex, top25[i].count);
+
+    // loop through each textNode and replace nodeValue with the its proper count
+    textNodes.forEach((el) => {
+      if (el.nodeValue) el.nodeValue = el.nodeValue.replace(regex, top25[i].count);
+    });
   }
 }
+
 
 // call fetchtop100 and then count and replace on the webpage
 fetchTop100.then(() => countReplaceTop25());

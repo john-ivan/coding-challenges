@@ -7,3 +7,5 @@ Time and Space Complexity - O(N)
 5. image links still break sometimes, find out why.
 6. understanding promises under the hood
 7. understand RegExp obj, note \b and ig (regex)
+8. Possibly memoize for speed
+9. Can selectively target body content more accurately
