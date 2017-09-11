@@ -1,26 +1,29 @@
 // METHODOLOGY
-// Create a function count and replace
-// Create filter for undesired words
-// Create a function to pull top 100 words from wiki page
-// Add common words to filter including any single chars
-// Extract text from desired wiki page and run it through filter
-// Split into words and count
+// Create an array for banned words
+// Create a function to fetch top 100 words from wiki page, add to bannedWords array
+// Create a function count and replace to count word appearance and replace with counted value
+// Pull bodyContent and split into an array of words
+// Loop through the array and use a counter to track word appearances
 // Replace top 25 words inline with their corresponding counts
 
 // Add Jquery script
-const scr = document.createElement("script");
-scr.src = "https://code.jquery.com/jquery-3.2.1.min.js";
+const scr = document.createElement('script');
+scr.src = 'https://code.jquery.com/jquery-3.2.1.min.js';
 document.body.appendChild(scr);
 
 const bannedWords = ['are', 'is', 'where', 'was'];
 
+// add reject as customary
 const fetchTop100 = new Promise((resolve) => {
   $.get('https://en.wikipedia.org/wiki/Most_common_words_in_English', (res) => {
     const data = $.parseHTML(res);
     const words = $(data).find('.columns-5').find('li');
     for (let i = 0; i < words.length; i += 1) {
-      if (!bannedWords.includes(words[i].innerText)) resolve(bannedWords.push(words[i].innerText));
+      if (!bannedWords.includes(words[i].innerText)) {
+        bannedWords.push(words[i].innerText);
+      }
     }
+    resolve('fetch successful');
   });
 });
 
@@ -29,10 +32,11 @@ function countReplaceTop25() {
   const body = document.body;
   const textContent = body.innerText;
 
+  // filter out non a-z characters, change to lower case, and split into an array
   const bodyContent = textContent.replace(/[^a-zA-Z ]/g, '').toLowerCase().split(' ');
 
   for (let i = 0; i < bodyContent.length; i += 1) {
-    // filter out banned words and single chars
+    // if element is not banned, and its length is greater than 1 check store
     if (!bannedWords.includes(bodyContent[i]) && bodyContent[i].length > 1) {
       // if in store increment count property by 1
       if (store[bodyContent[i]]) {
@@ -49,24 +53,13 @@ function countReplaceTop25() {
   const ordered = Object.values(store).sort((a, b) => a.count - b.count);
   // slice of largest elements
   const top25 = ordered.slice((ordered.length - 25), (ordered.length));
-  console.log(top25);
 
-  // sort by length
-  const top25byLength = top25.sort((a, b) => a.word.length - b.word.length);
-
-  // replace with top 25 start from the longest to the shortest to avoid root words
-  for (let i = top25byLength.length - 1; i >= 0; i -= 1) {
-    const regex = new RegExp(top25[i].word, 'ig');
-    body.innerHTML = body.innerHTML.replace(regex, top25byLength[i].count);
+  // loop through array of top 25 words
+  for (let i = top25.length - 1; i >= 0; i -= 1) {
+    // use regex to replace words with their counts
+    const regex = new RegExp(`\\b${top25[i].word}\\b`, 'ig');
+    body.innerHTML = body.innerHTML.replace(regex, top25[i].count);
   }
 }
 
-fetchTop100.then(() => countReplaceTop25());
-
-// KNOWLEDGE TO EXPLORE
-// cors /no cors etc (setting headers)
-// using fetch API do to the same as jquery
-// Use Vanilla JS to do the fetch
-// innertext vs textContent
-// filter out images or remove
-// review and refactore for time and space complexity
+$(document).ready(() => fetchTop100.then(() => countReplaceTop25()));
