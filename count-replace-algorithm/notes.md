@@ -9,3 +9,7 @@ Time and Space Complexity - O(N)
 7. understand RegExp obj, note \b and ig (regex)
 8. Possibly memoize for speed
 9. Can selectively target body content more accurately
+
+10. Account for multiple words sharing the same count as the word in the 25th position. (26 onwards);
+11. textContent is faster than innerText > refactor
+12. change banned words to an object

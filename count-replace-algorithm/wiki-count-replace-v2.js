@@ -1,17 +1,21 @@
 // METHODOLOGY
-// Create an array for banned words
+// Create a data structure for banned words
 // Create a function to fetch top 100 words from wiki page, add to bannedWords array
 // Create a function count and replace to count word appearance and replace with counted value
 // Pull bodyContent and split into an array of words
 // Loop through the array and use a counter to track word appearances
 // Replace top 25 words inline with their corresponding counts
 
+// TALKING POINT - Vanilla vs jQuery
+// TALKING POINT
+// - MY APPROACH > EXPLORATORY IF ABLE > BASIC FUNCTIONALITY, TEST & QA -> REFACTOR MERCILESSLY
+
 // append jQuery script to current web page --> not necessary
 // const scr = document.createElement('script');
 // scr.src = 'https://code.jquery.com/jquery-3.2.1.min.js';
 // document.body.appendChild(scr);
 
-// create an array to contain banned words
+// create an object to contain banned words - TALKING POINT
 const bannedWords = {
   are: true,
   is: true,
@@ -19,7 +23,7 @@ const bannedWords = {
   was: true,
 };
 
-// create a new promise that fetches top 100 words
+// create a new promise that fetches top 100 words - TALKING POINT
 const fetchTop100 = new Promise((resolve) => {
   $.get('https://en.wikipedia.org/wiki/Most_common_words_in_English', (res) => {
     const data = $.parseHTML(res);
@@ -27,6 +31,7 @@ const fetchTop100 = new Promise((resolve) => {
     const words = $(data).find('.columns-5').find('li');
     // loop through array of nodes
     for (let i = 0; i < words.length; i += 1) {
+      // TALKING POINT INNERTEXT VS TEXTCONTENT
       const word = words[i].textContent;
       // if word is not a dup store it in into bannedWords
       if (!bannedWords[word]) {
@@ -42,6 +47,7 @@ const fetchTop100 = new Promise((resolve) => {
 function textNodesUnder(target) {
   let node;
   const textNodes = [];
+  // TALKING POINT TREEWALKER METHOD OF THE DOCUMENT OBJECT OF THE WEB API
   const walk = document.createTreeWalker(target, NodeFilter.SHOW_TEXT, null, false);
   while (node = walk.nextNode()) textNodes.push(node);
   return textNodes;
@@ -85,6 +91,8 @@ function countReplaceTop25() {
   const mostUsedWords = ordered.slice(0, sliceEnd);
 
   // call textNodesUnder on content div to generate an array of only text nodes
+
+  // TALKING POINT - the importance of targeting text nodes
   const textNodes = textNodesUnder(document.body);
 
   // loop through array of most used words
@@ -107,5 +115,11 @@ const t0 = performance.now()
 fetchTop100.then(() => {
   countReplaceTop25()
   const t1 = performance.now()
-// console.log(`Call to countReplaceTop25 took ${(t1 - t0)} milliseconds.`)
+console.log(`Call to countReplaceTop25 took ${(t1 - t0)} milliseconds.`)
 });
+
+// POSSIBLE IMPROVEMENTS
+// Storage of banned words for successive uses
+// Generalizing to enable the function to be run by any website
+// Performance improvements by coding in Vanilla
+// Style - airBnB but I'm open to other coding formats that will better my code
